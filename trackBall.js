@@ -14,9 +14,9 @@ class TrackBall {
   display() {
     push();
     translate(this.x, this.y, this.z + 10);
-    fill(100, 102, 204, 250);
-    noStroke();
-    sphere(10);
+    fill(235, 229, 114, 200);
+    stroke(255, 255, 255);
+    cone(10, 20);
     pop();
   }
 }

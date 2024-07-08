@@ -1,12 +1,12 @@
 import mido
 import json
 
-# Function to convert MIDI note number to note name
+# Function to convert MIDI note number to note name and octave
 def note_number_to_name(note_number):
     note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
     octave = (note_number // 12) - 1
     note_name = note_names[note_number % 12]
-    return f"{note_name}{octave}"
+    return note_name, octave
 
 # Function to calculate the duration of one pulse in seconds
 def calculate_pulse_duration(bpm, ppqn):
@@ -52,12 +52,13 @@ for i, track in enumerate(midi_file.tracks):
             start_time = note_start_times.pop(msg.note)
             duration = current_time - start_time
             duration_ratio = duration / ppqn  # Calculate duration as a ratio of PPQN
-            note_name = note_number_to_name(msg.note)
+            note_name, octave = note_number_to_name(msg.note)
             start_time_seconds = ticks_to_seconds(start_time, pulse_duration)
             duration_seconds = ticks_to_seconds(duration, pulse_duration)
             track_data['notes'].append({
                 'note': msg.note,
                 'note_name': note_name,
+                'octave': octave,
                 'start_time': start_time,  # Start time in ticks
                 'start_time_seconds': start_time_seconds,  # Start time in seconds
                 'duration': duration,  # Duration in ticks

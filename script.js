@@ -29,6 +29,7 @@ function loadError(err) {
 
 function processData(data) {
   console.log("Processing data");
+  
   midiData = data;
   pulseDuration = midiData.pulse_duration;
 
@@ -73,8 +74,6 @@ function draw() {
   rotateY(PI / 10);
   //rotateZ(-PI / 40);
 
-  
-
   for (let i = 0; i < tracks.length; i++) {
     let track = tracks[i];
     let trackOffset = i * 200;
@@ -100,6 +99,16 @@ function draw() {
       notes.forEach(note => {
         let noteBox = new NoteBox(note, trackOffset, baseWidth, baseHeight, middleC);
         translate(-previousTranslated, 0, 0);
+        
+        // Check if this note is currently active and set isActivated
+        let currentTime = testSong.currentTime();
+        let currentPulse = currentTime / pulseDuration;
+        if (note.start_time <= currentPulse && currentPulse < note.start_time + note.duration) {
+            noteBox.isActivated = true;
+        } else {
+            noteBox.isActivated = false;
+        }
+
         previousTranslated = noteBox.display(currentX, z);
         z += boxDepth;
         
