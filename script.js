@@ -1,5 +1,6 @@
 let midiData;
 let testSong;
+let font;
 let tracks = [];
 let maxDuration = 0;
 let duration_ratio;
@@ -18,9 +19,10 @@ let currentYOffset = 0;
 let zoomFactor = 0.8;
 
 function preload() {
-  console.log("Preload started");
+  font = loadFont('./textFont/BaskervvilleSC-Regular.ttf');
   midiData = loadJSON('midi_data.json', processData);
   testSong = loadSound("canon-3.mp3", loaded, loadError);
+  console.log("Preload finished");
 }
 
 function loadError(err) {
@@ -51,8 +53,8 @@ function processData(data) {
 }
 
 function setup() {
-  console.log("Setup started");
   createCanvas(canvasWidth, canvasHeight, WEBGL);
+  textFont(font);
   frameRate(60);
   noLoop();
 }

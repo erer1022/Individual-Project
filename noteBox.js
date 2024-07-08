@@ -20,7 +20,7 @@ class NoteBox {
 
     if (this.isActivated) {
       this.alpha = 100; // Change alpha to a different value when activated
-      // this.showNoteInfo();
+      this.showNoteInfo(noteBoxX);
     } else {
       this.alpha = 250; // Default alpha value
     }
@@ -61,20 +61,15 @@ class NoteBox {
     return currentX + this.boxWidth / 2;
   }
 
-  // showNoteInfo() {
-  //   // Set text attributes outside the push/pop block
-  //   textFont('Roboto');
-  //   textSize(32);
-  //   fill(255);
-  //   stroke(0);
-  //   strokeWeight(4);
-
-  //   // Drawing text in 2D coordinates, consider using screen coordinates
-  //   push();
-  //   // Convert 3D coordinates to screen coordinates
-  //   let screenX = createVector(this.x + this.boxWidth / 2, this.y - this.boxHeight / 2, this.z);
-  //   text(`${this.note.note_name} ${this.note.octave}`, screenX.x, screenX.y);
-  //   pop();
-  // }
+  showNoteInfo(noteBoxX) {
+    // Drawing text in 2D coordinates, consider using screen coordinates
+    push();
+    // Convert 3D coordinates to screen coordinates
+    let position = createVector(this.x - noteBoxX - this.boxWidth / 2, this.y + this.boxHeight / 2, 0);
+    translate(position.x, position.y, position.z);
+    fill(0);
+    text(`${this.note.note_name} ${this.note.octave}`, 0, 0);
+    pop();
+  }
 }
 

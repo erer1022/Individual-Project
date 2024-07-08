@@ -12,10 +12,6 @@ def note_number_to_name(note_number):
 def calculate_pulse_duration(bpm, ppqn):
     return 60 / (bpm * ppqn)
 
-# Function to convert ticks to seconds
-def ticks_to_seconds(ticks, pulse_duration):
-    return ticks * pulse_duration
-
 # Load a MIDI file
 midi_file = mido.MidiFile('./canon-3.mid')
 
@@ -41,7 +37,7 @@ midi_data = {'tracks': [], 'ppqn': ppqn, 'bpm': bpm, 'pulse_duration': pulse_dur
 
 # Iterate through MIDI tracks and extract note information
 for i, track in enumerate(midi_file.tracks):
-    track_data = {'name': track.name, 'notes': []}
+    track_data = {'name': track.name if track.name else f'Track {i + 1}', 'notes': []}
     current_time = 0  # This will be in ticks
     note_start_times = {}
     for msg in track:
@@ -53,16 +49,12 @@ for i, track in enumerate(midi_file.tracks):
             duration = current_time - start_time
             duration_ratio = duration / ppqn  # Calculate duration as a ratio of PPQN
             note_name, octave = note_number_to_name(msg.note)
-            start_time_seconds = ticks_to_seconds(start_time, pulse_duration)
-            duration_seconds = ticks_to_seconds(duration, pulse_duration)
             track_data['notes'].append({
                 'note': msg.note,
                 'note_name': note_name,
                 'octave': octave,
                 'start_time': start_time,  # Start time in ticks
-                'start_time_seconds': start_time_seconds,  # Start time in seconds
                 'duration': duration,  # Duration in ticks
-                'duration_seconds': duration_seconds,  # Duration in seconds
                 'duration_ratio': duration_ratio  # Ratio of duration to PPQN
             })
     midi_data['tracks'].append(track_data)
