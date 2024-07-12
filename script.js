@@ -72,9 +72,17 @@ function draw() {
 
   translate(-canvasWidth / 4 + currentXOffset, currentYOffset, 0);
 
-  rotateX(-PI / 10);
+  rotateX(-PI / 12);
   rotateY(PI / 10);
   //rotateZ(-PI / 40);
+
+  // Draw lines parallel with the boxes
+  for (let i = 0; i < midiData.total_duration_pulses; i += midiData.ppqn * 4) {
+    let xPos = (i / midiData.ppqn) * baseWidth;
+    stroke(255);
+    line(xPos, 0, -800, xPos, 0, 1500);
+  }
+  
 
   for (let i = 0; i < tracks.length; i++) {
     let track = tracks[i];
@@ -117,26 +125,58 @@ function draw() {
         // initialize the ball's position
         if (ballPositions.length < i) {
           // constructor(trackIndex, x, y, z)
-          ballPositions.push(new TrackBall(i, currentX, noteBox.y * 2 -10, trackOffset));
+          ballPositions.push(new TrackBall(i, currentX, noteBox.y * 2 - 10, trackOffset));
         }
       });
     }
   }
+  // Update the current and next notes for each track and balls
+  updateNotesAndBalls();
+}
 
-  let currentTime = testSong.currentTime();
+let currentNotes = []; // Array to store current notes for each track
+let nextNotes = []; // Array to store next notes for each track
+
+function updateNotesAndBalls() {
+  let currentTime = testSong.currentTime(); 
   let currentPulse = currentTime / pulseDuration;
 
   ballPositions.forEach(ball => {
-    let noteAtCurrentPulse = tracks[ball.trackIndex].notes.find(note => note.start_time <= currentPulse && currentPulse < note.start_time + note.duration);
-    if (noteAtCurrentPulse) {
-      // updatePosition(currentPulse, note, baseWidth, baseHeight, middleC)
-      ball.updatePosition(currentPulse, noteAtCurrentPulse, baseWidth, baseHeight, middleC);
-    } else {
-      // ball's aniimation
-    }
-    ball.display();
+      let notes = tracks[ball.trackIndex].notes;
+      let noteAtCurrentPulse = notes.find(note => note.start_time <= currentPulse && currentPulse < note.start_time + note.duration);
+
+      // Find the next few notes
+      let futureNotes = notes.filter(note => note.start_time > currentPulse);
+      let nextNote = futureNotes[0];
+      let thirdNote = futureNotes[1];
+      let fourthNote = futureNotes[2];
+
+      // Store the current and next notes for the track
+      currentNotes[ball.trackIndex] = noteAtCurrentPulse;
+      nextNotes[ball.trackIndex] = nextNote;
+
+      if (noteAtCurrentPulse) {
+        // Update position
+        ball.updatePosition(currentPulse, noteAtCurrentPulse, baseWidth, baseHeight, middleC);
+        ball.isJumping = false;
+      } else if (ball.x < ((currentPulse / midiData.ppqn) * baseWidth)) {
+        ball.jump(currentPulse, baseWidth);
+      }
+      ball.display();
   });
 }
+
+  // if (noteAtCurrentPulse) {
+  //   ball.updatePosition(currentPulse, noteAtCurrentPulse, baseWidth, baseHeight, middleC);
+  // } else if (noteAtCurrentPulse && noteAtCurrentPulse.duration < midiData.ppqn){
+  //   ball.jump(noteAtCurrentPulse, nextNote);
+  // }
+  // }
+  
+//   ball.display();
+// });
+// }
+
 
 
 function keyPressed() {
